@@ -1,0 +1,37 @@
+# rubocop:disable Style/FrozenStringLiteralComment, Layout/LeadingCommentSpace, Naming/FileName
+#!/usr/bin/env ruby
+# rubocop:enable Style/FrozenStringLiteralComment, Layout/LeadingCommentSpace, Naming/FileName
+
+RUBY_GIT_DIR = '.ruby-git'.freeze
+OBJECTS_DIR = "#{RUBY_GIT_DIR}/objects".freeze
+REFS_DIR = "#{RUBY_GIT_DIR}/refs".freeze
+
+if Dir.exist? RUBY_GIT_DIR
+  puts 'Existing ruby-git project'
+  exit(-3)
+end
+
+def build_objects_dir
+  Dir.mkdir OBJECTS_DIR
+  Dir.mkdir "#{OBJECTS_DIR}/info"
+  Dir.mkdir "#{OBJECTS_DIR}/pack"
+end
+
+def build_refs_dir
+  Dir.mkdir REFS_DIR
+  Dir.mkdir "#{REFS_DIR}/heads"
+  Dir.mkdir "#{REFS_DIR}/tags"
+end
+
+def init_head
+  File.open("#{RUBY_GIT_DIR}/HEAD", 'w') do |file|
+    file.puts 'ref: refs/heads/master'
+  end
+end
+
+Dir.mkdir RUBY_GIT_DIR
+build_objects_dir
+build_refs_dir
+init_head
+
+puts "ruby-git initialized in #{RUBY_GIT_DIR}"

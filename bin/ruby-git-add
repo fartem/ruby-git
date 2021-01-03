@@ -1,0 +1,39 @@
+# rubocop:disable Style/FrozenStringLiteralComment, Layout/LeadingCommentSpace, Naming/FileName
+#!/usr/bin/env ruby
+# rubocop:enable Style/FrozenStringLiteralComment, Layout/LeadingCommentSpace, Naming/FileName
+
+# rubocop:disable Style/ExpandPathArguments
+$LOAD_PATH << File.expand_path('../../lib', __FILE__)
+# rubocop:enable Style/ExpandPathArguments
+
+require 'digest'
+require 'zlib'
+require 'ruby-git/object'
+
+RUBY_GIT_DIR = '.ruby-git'.freeze
+INDEX_PATH = "#{RUBY_GIT_DIR}/index".freeze
+
+unless Dir.exist? RUBY_GIT_DIR
+  puts 'Not an ruby-git project'
+  exit(-4)
+end
+
+path = ARGV.first
+
+if path.nil?
+  puts 'No path specified'
+  exit(-5)
+end
+
+file_contents = File.read(path)
+sha = Digest::SHA1.hexdigest file_contents
+blob = Zlib::Deflate.deflate file_contents
+object = RubyGit::Object.new sha
+
+object.write do |file|
+  file.print blob
+end
+
+File.open(INDEX_PATH, 'a') do |file|
+  file.puts "#{sha} blob #{path}"
+end

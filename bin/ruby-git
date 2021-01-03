@@ -1,0 +1,18 @@
+# rubocop:disable Style/FrozenStringLiteralComment, Layout/LeadingCommentSpace, Naming/FileName
+#!/usr/bin/env ruby
+# rubocop:enable Style/FrozenStringLiteralComment, Layout/LeadingCommentSpace, Naming/FileName
+
+command, *args = ARGV
+
+if command.nil?
+  puts 'Usage: ruby-git <command> [<args>]'
+  exit(-1)
+end
+
+path_to_command = File.expand_path("../ruby-git-#{command}", __FILE__)
+unless File.exist? path_to_command
+  puts 'No such command'
+  exit(-2)
+end
+
+exec path_to_command, *args
